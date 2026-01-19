@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PrivatepoolApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PrivatepoolApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PrivatepoolApplication.class, args);
+    }
 
 }
