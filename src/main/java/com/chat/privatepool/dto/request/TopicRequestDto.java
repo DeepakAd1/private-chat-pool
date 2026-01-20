@@ -17,9 +17,9 @@ public class TopicRequestDto extends GenericRequestDto {
     private String description;
     private Long createdBy;
     private String createdByName;
-    private Boolean isPremium = false;
+    private Boolean isPremium;
     private TopicVisibility visibility;
     private JoinPolicy joinPolicy;
     private LocalDateTime closeAt;
-    private Boolean isActive = true;
+    private Boolean isActive;
 }

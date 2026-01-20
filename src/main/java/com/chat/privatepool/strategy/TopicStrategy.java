@@ -64,12 +64,34 @@ public class TopicStrategy implements GenericCrudOps<CommonResponseObject> {
                 return commonResponseObject;
             }
             //update logic
-            return commonResponseObject;
-
+            Topic topic = updateFromDto(topicRequestDto);
+            if (topic == null) return CommonResponseObject.setErrorMessage("Invalid payload!");
+            topicDao.save(topic);
+            return CommonResponseObject.setData("Data Updated Successfully!", topic);
         } catch (Exception e) {
             log.error("Error in update topic!!", e);
             return CommonResponseObject.setErrorMessage(commonResponseObject, e.getMessage());
         }
+    }
+
+    private Topic updateFromDto(TopicRequestDto requestDto) {
+        if (requestDto.getId() <= 0) {
+            return null;
+        }
+        Topic topic = topicDao.findById((long) requestDto.getId()).orElse(null);
+        if (topic == null) return null;
+
+        Topic newTopic = new Topic();
+        newTopic.setCreatedBy(requestDto.getCreatedBy() != null ? requestDto.getCreatedBy() : topic.getCreatedBy());
+        newTopic.setName(requestDto.getName() != null ? requestDto.getName() : topic.getName());
+        newTopic.setVisibility(requestDto.getVisibility() != null ? requestDto.getVisibility() : topic.getVisibility());
+        newTopic.setDescription(requestDto.getDescription() != null ? requestDto.getDescription() : topic.getDescription());
+        newTopic.setJoinPolicy(requestDto.getJoinPolicy() != null ? requestDto.getJoinPolicy() : topic.getJoinPolicy());
+        newTopic.setIsPremium(requestDto.getIsPremium() != null ? requestDto.getIsPremium() : topic.getIsPremium());
+        newTopic.setIsActive(requestDto.getIsActive() != null ? requestDto.getIsActive() : topic.getIsActive());
+        newTopic.setCreatedByName(requestDto.getCreatedByName() != null ? requestDto.getCreatedByName() : topic.getCreatedByName());
+        newTopic.setCloseAt(requestDto.getCloseAt() != null ? requestDto.getCloseAt() : topic.getCloseAt());
+        return newTopic;
     }
 
     @Override
@@ -81,8 +103,16 @@ public class TopicStrategy implements GenericCrudOps<CommonResponseObject> {
                 return commonResponseObject;
             }
             //remove logic
-            return commonResponseObject;
-
+            if (topicRequestDto.getId() <= 0) {
+                return CommonResponseObject.setErrorMessage("Invalid Id" + topicRequestDto.getId());
+            }
+            Topic topic = topicDao.findById((long) topicRequestDto.getId()).orElse(null);
+            if (topic == null) {
+                return CommonResponseObject.setErrorMessage("No Data Found");
+            }
+            topic.setIsActive(false);
+            topicDao.save(topic);
+            return CommonResponseObject.setData("Topic deleted successfully!", topic);
         } catch (Exception e) {
             log.error("Error in update topic!!", e);
             return CommonResponseObject.setErrorMessage(commonResponseObject, e.getMessage());
@@ -98,8 +128,14 @@ public class TopicStrategy implements GenericCrudOps<CommonResponseObject> {
                 return commonResponseObject;
             }
             //get logic
-            return commonResponseObject;
-
+            if (topicRequestDto.getId() <= 0) {
+                return CommonResponseObject.setErrorMessage("Invalid Id" + topicRequestDto.getId());
+            }
+            Topic topic = topicDao.findById((long) topicRequestDto.getId()).orElse(null);
+            if (topic == null) {
+                return CommonResponseObject.setErrorMessage("No Data Found");
+            }
+            return CommonResponseObject.setData("Data Fetched successfully", topic);
         } catch (Exception e) {
             log.error("Error in update topic!!", e);
             return CommonResponseObject.setErrorMessage(commonResponseObject, e.getMessage());

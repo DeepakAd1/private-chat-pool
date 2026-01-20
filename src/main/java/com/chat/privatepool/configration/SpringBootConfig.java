@@ -7,8 +7,8 @@ import tools.jackson.databind.ObjectMapper;
 @Configuration
 public class SpringBootConfig {
 
-//    @Bean
-//    public ObjectMapper objectMapper(){
-//        return new ObjectMapper();
-//    }
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 }

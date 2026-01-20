@@ -3,11 +3,12 @@ package com.chat.privatepool.service;
 import com.chat.privatepool.dto.request.GenericRequestDto;
 import com.chat.privatepool.strategy.GenericCrudOps;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class ConfigHandler {
 
