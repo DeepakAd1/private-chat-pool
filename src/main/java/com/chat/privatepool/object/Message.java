@@ -35,6 +35,9 @@ public class Message {
     @Column(name = "message_type")
     private MessageType messageType;
 
+    @Column(name = "reply_id")
+    private Long replyId;
+
     @Column(name = "is_persisted")
     private Boolean isPersisted = true;
 
