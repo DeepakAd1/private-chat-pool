@@ -29,6 +29,8 @@ public class MessageStrategy implements GenericCrudOps<CommonResponseObject> {
                 return commonResponseObject;
             }
             Message message = createMessage(messageRequestDto);
+            message.setCreatedAt(CommonUtil.getCurrentTime());
+            message.setModifiedAt(CommonUtil.getCurrentTime());
             messageDao.save(message);
             CommonResponseObject.setData(commonResponseObject, "saved successfully", message);
             return commonResponseObject;
@@ -76,19 +78,58 @@ public class MessageStrategy implements GenericCrudOps<CommonResponseObject> {
         message.setId(messageRequestDto.getId());
         message.setContent(CommonUtil.isEmptyStr(messageRequestDto.getContent()) ? existingMessage.getContent() : messageRequestDto.getContent());
         message.setMessageType(messageRequestDto.getMessageType() != null ? messageRequestDto.getMessageType() : existingMessage.getMessageType());
+        message.setReplyId(messageRequestDto.getReplyId() != null ? messageRequestDto.getReplyId() : existingMessage.getReplyId());
+        message.setSenderName(messageRequestDto.getSenderName() != null ? messageRequestDto.getSenderName() : existingMessage.getSenderName());
         message.setSenderId(CommonUtil.isNonPrimitiveEmpty(messageRequestDto.getSenderId()) ? messageRequestDto.getSenderId() : existingMessage.getSenderId());
-//        message.setMessageType();
+        message.setIsPersisted(messageRequestDto.getIsPersisted() != null ? messageRequestDto.getIsPersisted() : existingMessage.getIsPersisted());
+        message.setIsRemoved(messageRequestDto.getIsRemoved() != null ? messageRequestDto.getIsRemoved() : existingMessage.getIsRemoved());
+        message.setModifiedAt(CommonUtil.getCurrentTime());
         return message;
     }
 
     @Override
     public CommonResponseObject remove(GenericRequestDto requestDto) {
-        return null;
+        CommonResponseObject commonResponseObject = new CommonResponseObject();
+        try {
+            if (!(requestDto instanceof MessageRequestDto messageRequestDto)) {
+                CommonResponseObject.setErrorMessage(commonResponseObject, "Different instance!!");
+                return commonResponseObject;
+            }
+            //update logic
+            if (CommonUtil.isNonPrimitiveEmpty(messageRequestDto.getId())) {
+                return CommonResponseObject.setErrorMessage("Invalid payload!");
+            }
+            Message message = messageDao.findById(messageRequestDto.getId()).orElse(null);
+            if (message == null) return CommonResponseObject.setErrorMessage("Message not found!");
+            message.setIsRemoved(true);
+            message.setModifiedAt(CommonUtil.getCurrentTime());
+            messageDao.save(message);
+            return CommonResponseObject.setData("Message Updated Successfully!", message);
+        } catch (Exception e) {
+            log.error("Error in Remove Message!!", e);
+            return CommonResponseObject.setErrorMessage(commonResponseObject, e.getMessage());
+        }
     }
 
     @Override
     public CommonResponseObject get(GenericRequestDto requestDto) {
-        return null;
+        CommonResponseObject commonResponseObject = new CommonResponseObject();
+        try {
+            if (!(requestDto instanceof MessageRequestDto messageRequestDto)) {
+                CommonResponseObject.setErrorMessage(commonResponseObject, "Different instance!!");
+                return commonResponseObject;
+            }
+            //update logic
+            if (CommonUtil.isNonPrimitiveEmpty(messageRequestDto.getId())) {
+                return CommonResponseObject.setErrorMessage("Invalid payload!");
+            }
+            Message message = messageDao.findById(messageRequestDto.getId()).orElse(null);
+            if (message == null) return CommonResponseObject.setErrorMessage("Message not found!");
+            return CommonResponseObject.setData("Message fetched successfully!", message);
+        } catch (Exception e) {
+            log.error("Error in get Message!!", e);
+            return CommonResponseObject.setErrorMessage(commonResponseObject, e.getMessage());
+        }
     }
 
     @Override

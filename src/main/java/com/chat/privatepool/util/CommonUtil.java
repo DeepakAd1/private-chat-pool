@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 
@@ -46,5 +47,9 @@ public class CommonUtil {
         }
 
         return false;
+    }
+
+    public static LocalDateTime getCurrentTime(){
+        return LocalDateTime.now();
     }
 }
