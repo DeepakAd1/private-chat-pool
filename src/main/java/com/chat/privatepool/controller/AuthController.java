@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/no-auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/guest")
+    @PostMapping("/guest-login")
     public ResponseEntity<GuestLoginResponse> guestLogin(
             @RequestParam(required = false) String nickName) {
 
