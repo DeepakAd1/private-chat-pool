@@ -5,8 +5,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,20 +52,43 @@ public class JwtUtil {
     }
 
     public boolean isTokenExpired(String token) {
+        if (CommonUtil.isEmptyStr(token)) return false;
         return extractAllClaims(token)
                 .getExpiration()
                 .before(new Date());
     }
 
+    public String extractToken(ServerHttpRequest request) {
+
+        URI uri = request.getURI();
+        String query = uri.getQuery(); // token=xxx
+
+        if (query == null) {
+            return null;
+        }
+
+        for (String param : query.split("&")) {
+            if (param.startsWith("token=")) {
+                return param.substring(6);
+            }
+        }
+
+        return null;
+    }
+
+
     public Long extractUserId(String token) {
+        if (CommonUtil.isEmptyStr(token)) return 0L;
         return extractAllClaims(token).get("userId", Long.class);
     }
 
     public String extractUserType(String token) {
+        if (CommonUtil.isEmptyStr(token)) return null;
         return extractAllClaims(token).get("userType", String.class);
     }
 
     public String extractDisplayName(String token) {
+        if (CommonUtil.isEmptyStr(token)) return null;
         return extractAllClaims(token).getSubject();
     }
 }
