@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
-                .addHandler(handler, "/ws/chat")
+                .addHandler(handler, "/no-auth/ws/chat")
                 .addInterceptors(webSocketAuthInterceptor)
                 .setAllowedOrigins("*");
     }

@@ -15,7 +15,7 @@ public interface SubscriberRepo extends JpaRepository<Subscriber, Long> {
     @Query(value = "select user_id from subscribers where topic_id = :topicId and removed_by <= 0", nativeQuery = true)
     public Set<Long> getSubscriberListByTopicId(Long topicId);
 
-    @Query(value = "select topic_id from subscribers where user_id = :userId and removed_by <= 0")
+    @Query(value = "select topic_id from subscribers where user_id = :userId and removed_by <= 0", nativeQuery = true)
     public Set<Long> getTopicListByUserId(Long userId);
 
     @Query(value = """

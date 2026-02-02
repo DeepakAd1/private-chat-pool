@@ -4,6 +4,8 @@ import com.chat.privatepool.constants.MessageCategory;
 import com.chat.privatepool.dto.request.MessageRequestDto;
 import com.chat.privatepool.constants.TopicUnreadView;
 import com.chat.privatepool.constants.WebSocketPayload;
+import com.chat.privatepool.object.User;
+import com.chat.privatepool.repository.UserRepository;
 import com.chat.privatepool.strategy.MessageStrategy;
 import com.chat.privatepool.strategy.SubscriberStrategy;
 import com.chat.privatepool.strategy.TopicStrategy;
@@ -30,6 +32,7 @@ import java.util.Set;
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepo;
     private final TopicStrategy topicStrategy;
     private final MessageStrategy messageStrategy;
     private final SubscriberStrategy subscriberStrategy;
@@ -72,7 +75,14 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         try {
             Long userId = (Long) session.getAttributes().get("userId");
             String originalPayload = message.getPayload();
-            MessageRequestDto body = objectMapper.convertValue(originalPayload, MessageRequestDto.class);
+            MessageRequestDto body = objectMapper.readValue(originalPayload, MessageRequestDto.class);
+            body.setSenderId(userId);
+            User user = userRepo.findById(userId).orElse(null);
+            if (user == null) {
+                log.error("User with id {} not found! inside handleTextMessage()!", userId);
+                return ;
+            }
+            body.setSenderName(user.getDefaultName());
             Long topicId = body.getTopicId();
             if (CommonUtil.isNonPrimitiveEmpty(topicId)) return;
             messageStrategy.save(body);

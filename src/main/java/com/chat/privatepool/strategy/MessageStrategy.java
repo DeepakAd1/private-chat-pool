@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.List;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -134,7 +136,22 @@ public class MessageStrategy implements GenericCrudOps<CommonResponseObject> {
 
     @Override
     public CommonResponseObject getAll(GenericRequestDto requestDto) {
-        return null;
+        CommonResponseObject commonResponseObject = new CommonResponseObject();
+        try {
+            if (!(requestDto instanceof MessageRequestDto messageRequestDto)) {
+                CommonResponseObject.setErrorMessage(commonResponseObject, "Different instance!!");
+                return commonResponseObject;
+            }
+            if (CommonUtil.isNonPrimitiveEmpty(messageRequestDto.getTopicId())) {
+                return CommonResponseObject.setErrorMessage("Invalid payload!");
+            }
+            List<Message> message = messageDao.findAllByTopicId(messageRequestDto.getTopicId());
+            if (message.isEmpty()) return CommonResponseObject.setErrorMessage("No Messages in topicId");
+            return CommonResponseObject.setData("Messages fetched successfully!", message);
+        } catch (Exception e) {
+            log.error("Error in get Message!!", e);
+            return CommonResponseObject.setErrorMessage(commonResponseObject, e.getMessage());
+        }
     }
 
     @Override

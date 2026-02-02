@@ -1,15 +1,19 @@
 package com.chat.privatepool.strategy;
 
+import com.chat.privatepool.constants.SubscriptionStatus;
 import com.chat.privatepool.dto.request.GenericRequestDto;
 import com.chat.privatepool.dto.request.TopicRequestDto;
 import com.chat.privatepool.dto.response.CommonResponseObject;
+import com.chat.privatepool.object.Subscriber;
 import com.chat.privatepool.object.Topic;
+import com.chat.privatepool.repository.SubscriberRepo;
 import com.chat.privatepool.repository.TopicDao;
+import com.chat.privatepool.util.CommonUtil;
+import com.chat.privatepool.util.RequestContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +23,7 @@ import java.time.LocalDateTime;
 public class TopicStrategy implements GenericCrudOps<CommonResponseObject> {
 
     private final TopicDao topicDao;
-    private final ObjectMapper objectMapper;
+    private final SubscriberRepo subscriberRepo;
 
     @Override
     public CommonResponseObject save(GenericRequestDto requestDto) {
@@ -31,6 +35,7 @@ public class TopicStrategy implements GenericCrudOps<CommonResponseObject> {
             }
             Topic topic = createTopicFromDto(topicRequestDto);
             topic = topicDao.save(topic);
+            subscriberRepo.save(createSubscriber(topic));
             CommonResponseObject.setData(commonResponseObject, "saved successfully", topic);
             return commonResponseObject;
         } catch (Exception e) {
@@ -40,18 +45,30 @@ public class TopicStrategy implements GenericCrudOps<CommonResponseObject> {
         }
     }
 
+    private Subscriber createSubscriber(Topic topic) {
+        Subscriber subscriber = new Subscriber();
+        subscriber.setTopicId(topic.getId());
+        subscriber.setIsPremium(false);
+        subscriber.setIsAdmin(true);
+        subscriber.setUserId(topic.getCreatedBy());
+        subscriber.setStatus(SubscriptionStatus.ACTIVE);
+        subscriber.setRemovedBy(0L);
+        subscriber.setJoinedAt(CommonUtil.getCurrentTime());
+        return subscriber;
+    }
+
     private static @NonNull Topic createTopicFromDto(TopicRequestDto topicRequestDto) {
         Topic topic = new Topic();
         topic.setDescription(topicRequestDto.getDescription());
         topic.setName(topicRequestDto.getName());
-        topic.setCreatedByName(topicRequestDto.getCreatedByName());
+        topic.setCreatedByName(CommonUtil.isEmptyStr(topicRequestDto.getCreatedByName()) ? RequestContext.get().getDisplayName() : topicRequestDto.getCreatedByName());
         topic.setVisibility(topicRequestDto.getVisibility());
         topic.setIsActive(topicRequestDto.getIsActive());
         topic.setCloseAt(topicRequestDto.getCloseAt());
         topic.setCreatedAt(LocalDateTime.now());
         topic.setIsPremium(topicRequestDto.getIsPremium());
         topic.setJoinPolicy(topicRequestDto.getJoinPolicy());
-        topic.setCreatedBy(topicRequestDto.getCreatedBy());
+        topic.setCreatedBy(RequestContext.get().getUserId());
         return topic;
     }
 
