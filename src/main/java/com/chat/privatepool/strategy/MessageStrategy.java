@@ -145,7 +145,7 @@ public class MessageStrategy implements GenericCrudOps<CommonResponseObject> {
             if (CommonUtil.isNonPrimitiveEmpty(messageRequestDto.getTopicId())) {
                 return CommonResponseObject.setErrorMessage("Invalid payload!");
             }
-            List<Message> message = messageDao.findAllByTopicId(messageRequestDto.getTopicId());
+            List<Message> message = messageDao.findAllByTopicIdSortByCreatedAtDesc(messageRequestDto.getTopicId());
             if (message.isEmpty()) return CommonResponseObject.setErrorMessage("No Messages in topicId");
             return CommonResponseObject.setData("Messages fetched successfully!", message);
         } catch (Exception e) {

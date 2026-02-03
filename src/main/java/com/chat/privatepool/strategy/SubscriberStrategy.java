@@ -3,6 +3,7 @@ package com.chat.privatepool.strategy;
 import com.chat.privatepool.dto.request.GenericRequestDto;
 import com.chat.privatepool.dto.response.CommonResponseObject;
 import com.chat.privatepool.constants.TopicUnreadView;
+import com.chat.privatepool.object.Subscriber;
 import com.chat.privatepool.repository.SubscriberRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,10 @@ public class SubscriberStrategy implements GenericCrudOps<CommonResponseObject> 
     @Override
     public boolean canHandle(GenericRequestDto requestDto) {
         return false;
+    }
+
+    public void saveSubscriber(Subscriber subscriber) {
+        subscriberRepo.save(subscriber);
     }
 
     public Set<Long> getSubscribersId(Long topicId) {

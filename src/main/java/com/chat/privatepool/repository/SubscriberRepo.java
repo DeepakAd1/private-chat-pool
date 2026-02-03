@@ -1,5 +1,6 @@
 package com.chat.privatepool.repository;
 
+import com.chat.privatepool.constants.SubscriptionStatus;
 import com.chat.privatepool.constants.TopicUnreadView;
 import com.chat.privatepool.object.Subscriber;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,4 +35,5 @@ public interface SubscriberRepo extends JpaRepository<Subscriber, Long> {
             """, nativeQuery = true)
     List<TopicUnreadView> getUnreadCountByUser(Long userId);
 
+    List<Subscriber> findAllByIdAndStatus(long topicId, SubscriptionStatus subscriptionStatus);
 }
