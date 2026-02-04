@@ -1,6 +1,9 @@
 package com.chat.privatepool.util;
 
+import com.chat.privatepool.object.Topic;
+import com.chat.privatepool.repository.TopicDao;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 
@@ -10,6 +13,9 @@ import java.util.Map;
 
 @Slf4j
 public class CommonUtil {
+
+    @Autowired
+    private static TopicDao topicDao;
 
     public static <T> T createNewReference(ObjectMapper objectMapper, T obj) {
         try {
@@ -49,7 +55,13 @@ public class CommonUtil {
         return false;
     }
 
-    public static LocalDateTime getCurrentTime(){
+    public static LocalDateTime getCurrentTime() {
         return LocalDateTime.now();
+    }
+
+    public static boolean isAdmin(Long userId, Long topicId) {
+        Topic topic = topicDao.findById(topicId).orElse(null);
+        if (topic == null) return false;
+        return userId.equals(topic.getCreatedBy());
     }
 }

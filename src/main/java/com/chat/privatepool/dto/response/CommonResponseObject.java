@@ -46,9 +46,11 @@ public class CommonResponseObject {
     public static CommonResponseObject setData(CommonResponseObject responseObject, String message, Object object) {
         if (responseObject == null) responseObject = new CommonResponseObject();
         responseObject = setData(responseObject, message);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String data = objectMapper.writeValueAsString(object);
-        responseObject.setData(data);
+        if (object != null) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String data = objectMapper.writeValueAsString(object);
+            responseObject.setData(data);
+        }
         return responseObject;
     }
 

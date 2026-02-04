@@ -36,4 +36,8 @@ public interface SubscriberRepo extends JpaRepository<Subscriber, Long> {
     List<TopicUnreadView> getUnreadCountByUser(Long userId);
 
     List<Subscriber> findAllByIdAndStatus(long topicId, SubscriptionStatus subscriptionStatus);
+
+    @Query(value = "UPDATE subscribers SET status = :subscriptionStatus WHERE user_id = :userId AND topic_id = :topicId", nativeQuery = true)
+    int updateSubscriptionStatus(Long userId, Long topicId, SubscriptionStatus subscriptionStatus);
+
 }
